@@ -1,78 +1,80 @@
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * =====================================================================
- * MAIN CLASS - UseCase11PalindromeCheckerApp
+ * MAIN CLASS - UseCase12PalindromeCheckerApp
  * =====================================================================
  * Description:
- * This class demonstrates palindrome validation using
- * object-oriented design.
- * * The palindrome logic is encapsulated inside a
- * PalindromeService class.
- * * This improves:
- * - Reusability
- * - Separation of concerns
+ * This class demonstrates how different palindrome validation algorithms
+ * can be selected dynamically at runtime using the Strategy Design Pattern.
  */
 public class PalindromeCheckerApp {
 
-    /**
-     * Application entry point for UC11.
-     */
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        // Step 1: Instantiate the Service (Object Creation)
-        PalindromeService service = new PalindromeService();
+        System.out.print("Input : ");
+        String input = sc.nextLine();
 
-        System.out.println("--- UC11: Object-Oriented Palindrome Service ---");
-        System.out.print("Enter string to check: ");
-        String userInput = sc.nextLine();
+        // 1. Define the strategy we want to use
+        // In a real app, this could be chosen via a menu or config file
+        PalindromeStrategy strategy = new StackStrategy();
 
-        // Step 2: Use the service method
-        boolean result = service.checkPalindrome(userInput);
+        // 2. Execute the selected algorithm (Polymorphism in action)
+        boolean result = strategy.check(input);
 
-        if (result) {
-            System.out.println("Result: Success! It is a palindrome.");
-        } else {
-            System.out.println("Result: It is NOT a palindrome.");
-        }
+        System.out.println("Is Palindrome? : " + result);
 
         sc.close();
     }
 }
 
 /**
- * Service class that contains palindrome logic.
+ * =====================================================================
+ * INTERFACE - PalindromeStrategy
+ * =====================================================================
+ * This interface defines a contract for all palindrome checking algorithms.
  */
-class PalindromeService {
-
+interface PalindromeStrategy {
     /**
-     * Checks whether the input string is a palindrome.
-     * * @param input Input string
+     * @param input String to validate
      * @return true if palindrome, false otherwise
      */
-    public boolean checkPalindrome(String input) {
-        // Handle null or empty inputs
-        if (input == null || input.isEmpty()) {
-            return false;
+    boolean check(String input);
+}
+
+/**
+ * =====================================================================
+ * CLASS - StackStrategy
+ * =====================================================================
+ * This class provides a Stack based implementation of the PalindromeStrategy.
+ * It uses LIFO behavior to reverse characters.
+ */
+class StackStrategy implements PalindromeStrategy {
+
+    @Override
+    public boolean check(String input) {
+        if (input == null) return false;
+
+        // Normalize for consistent results
+        String normalized = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+
+        // Create a stack to store characters
+        Stack<Character> stack = new Stack<>();
+
+        // Push each character onto the stack
+        for (char c : normalized.toCharArray()) {
+            stack.push(c);
         }
 
-        // Preprocessing: logic is hidden inside this method (Encapsulation)
-        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-        // Initialize pointers (as per hint)
-        int start = 0;
-        int end = cleanInput.length() - 1;
-
-        // Compare characters moving inward
-        while (start < end) {
-            if (cleanInput.charAt(start) != cleanInput.charAt(end)) {
-                return false; // Mismatch found
+        // Compare characters by popping from the stack (LIFO)
+        for (char c : normalized.toCharArray()) {
+            if (c != stack.pop()) {
+                return false;
             }
-            start++;
-            end--;
         }
 
-        return true; // All characters matched
+        return true;
     }
 }
