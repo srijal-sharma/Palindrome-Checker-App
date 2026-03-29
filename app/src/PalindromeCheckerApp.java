@@ -1,42 +1,78 @@
 import java.util.Scanner;
 
+/**
+ * =====================================================================
+ * MAIN CLASS - UseCase11PalindromeCheckerApp
+ * =====================================================================
+ * Description:
+ * This class demonstrates palindrome validation using
+ * object-oriented design.
+ * * The palindrome logic is encapsulated inside a
+ * PalindromeService class.
+ * * This improves:
+ * - Reusability
+ * - Separation of concerns
+ */
 public class PalindromeCheckerApp {
 
+    /**
+     * Application entry point for UC11.
+     */
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
-        System.out.println("--- UC9: Recursive Palindrome Checker ---");
-        System.out.print("Enter a string to check: ");
-        String input = scanner.nextLine();
+        // Step 1: Instantiate the Service (Object Creation)
+        PalindromeService service = new PalindromeService();
 
-        // Standardize input: remove non-alphanumeric and convert to lowercase
-        String cleanedInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        System.out.println("--- UC11: Object-Oriented Palindrome Service ---");
+        System.out.print("Enter string to check: ");
+        String userInput = sc.nextLine();
 
-        if (isPalindrome(cleanedInput)) {
-            System.out.println("\"" + input + "\" is a palindrome.");
+        // Step 2: Use the service method
+        boolean result = service.checkPalindrome(userInput);
+
+        if (result) {
+            System.out.println("Result: Success! It is a palindrome.");
         } else {
-            System.out.println("\"" + input + "\" is NOT a palindrome.");
+            System.out.println("Result: It is NOT a palindrome.");
         }
 
-        scanner.close();
+        sc.close();
     }
+}
+
+/**
+ * Service class that contains palindrome logic.
+ */
+class PalindromeService {
 
     /**
-     * Recursive method to check if a string is a palindrome.
+     * Checks whether the input string is a palindrome.
+     * * @param input Input string
+     * @return true if palindrome, false otherwise
      */
-    public static boolean isPalindrome(String str) {
-        // Base Condition: If length is 0 or 1, we've successfully checked everything
-        if (str.length() <= 1) {
-            return true;
+    public boolean checkPalindrome(String input) {
+        // Handle null or empty inputs
+        if (input == null || input.isEmpty()) {
+            return false;
         }
 
-        // Check if the first and last characters match
-        if (str.charAt(0) == str.charAt(str.length() - 1)) {
-            // Recursive Call: Slice the string to remove the first and last characters
-            return isPalindrome(str.substring(1, str.length() - 1));
+        // Preprocessing: logic is hidden inside this method (Encapsulation)
+        String cleanInput = input.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+
+        // Initialize pointers (as per hint)
+        int start = 0;
+        int end = cleanInput.length() - 1;
+
+        // Compare characters moving inward
+        while (start < end) {
+            if (cleanInput.charAt(start) != cleanInput.charAt(end)) {
+                return false; // Mismatch found
+            }
+            start++;
+            end--;
         }
 
-        // If characters don't match, it's not a palindrome
-        return false;
+        return true; // All characters matched
     }
 }
